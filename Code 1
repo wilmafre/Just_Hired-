@@ -1,0 +1,45 @@
+#DATADRIVEN VERKSAMHETSUTVECKLING
+
+#IMPORTS
+import pandas as pd
+import matplotlib.pyplot as plt
+import nltk
+import seaborn as sns
+import numpy as np
+import string
+
+#Read dataset from 2022 csv-file
+df = pd.read_csv('jobtech_dataset2022.csv')
+
+#df.info()
+
+#Remove/drop columns
+columns_to_drop = ['removed_date', 'application_contacts', 'driving_license', 'access',
+                    'salary_description', 'external_id', 'logo_url']
+df.drop(columns_to_drop, inplace=True, axis=1)
+df.info()
+
+#Print amount of missing values in the colums
+#print("Amount of missing values in - ")
+#for column in df.columns:
+    #percentage_missing = np.mean(df[column].isna())
+    #print(f'{column} : {round(percentage_missing*100)}%')
+
+#Create a heatmap of the dataset-columns
+sns.heatmap(df.isna())
+plt.show()
+
+#Convert the dataset to lowercase
+def convert_to_lowercase(df):
+    return df.lower()
+
+#Remove skiljetecken ?
+def remove_punctuation(df):
+    return df.translate(str.maketrans("", "", string.punctuation))
+
+#Stopwords
+def remove_stopwords(df):
+    stopwords_list = ['lärare']
+    words = df.split()
+    filtered_words = [word for word in words if word not in stopwords_list]
+    return " ".join(filtered_words)
