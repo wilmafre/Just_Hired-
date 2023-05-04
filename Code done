@@ -1,0 +1,55 @@
+#DATADRIVEN VERKSAMHETSUTVECKLING
+
+#IMPORTS
+import pandas as pd
+import matplotlib.pyplot as plt
+import nltk
+from nltk.corpus import stopwords
+
+import seaborn as sns
+import numpy as np
+import string
+
+#Read dataset from 2022 csv-file
+df = pd.read_csv('jobtech_dataset2022.csv')
+
+#Remove/drop columns
+columns_to_drop = ['removed_date', 'application_contacts', 'driving_license', 'access',
+                    'salary_description', 'external_id', 'logo_url','id', 'application_deadline',
+                    'number_of_vacancies','employment_type','salary_type','duration','working_hours_type',
+                    'access_to_own_car', 'driving_license_required', 'workplace_address','source_type','webpage_url',
+                    'Unnamed: 0', 'removed', 'timestamp']
+df.drop(columns_to_drop, inplace=True, axis=1)
+df.info()
+
+
+#Remove skiljetecken ?
+#def remove_punctuation(df):
+    #return df.translate(str.maketrans("", "", string.punctuation))
+
+# Remove punctuation and convert to lowercase
+df['description'] = df['description'].apply(lambda x: x.translate(str.maketrans("", "", string.punctuation)))
+df['description'] = df['description'].apply(lambda x: x.lower())
+
+# Remove stopwords
+stop_words = set(stopwords.words('swedish')) # Change to the appropriate language for your dataset
+df['description'] = df['description'].apply(lambda x: ' '.join([word for word in x.split() if word not in stop_words]))
+
+#Search_terms 
+search_terms = ['Java', 'Javascript', 'python', 'C#', 'C\+\+', 'Swift', 'Ruby', 'PHP', 'Kotlin', 'Typescript']
+
+search_str = '|'.join(search_terms)
+ 
+# Skapa en ny DataFrame med alla annonser som innehåller minst ett av de 10 programmeringsspråken
+filtered_df = df[df.apply(lambda row: row.astype(str).str.contains(search_str, case=False).any(), axis=1)]
+
+#Count number of rows
+num_rows = filtered_df.shape[0]
+
+# Spara det filtrerade datasetet till en Excel-fil
+#filtered_df.to_excel('2022.xlsx', index=False)
+
+#Save as csv-file
+#filtered_df.to_csv('filtered_dataset.csv', index=False)
+
+print(filtered_df)
